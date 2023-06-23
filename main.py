@@ -1,3 +1,4 @@
+import json
 from tkinter import *
 from tkinter import  messagebox
 from random import choice,randint,shuffle
@@ -39,12 +40,25 @@ def save():
     website = entry_website.get()
     email = entry_email.get()
     password = entry_password.get()
+    new_data = {website : {
+        "email":email,
+        "password":password,
+    }}
 
     if len(website)>0 and len(password)>0:
         is_ok = messagebox.askokcancel(title="Confirmation needed",message=f"Are You Sure that you want to save \n ")
         if is_ok:
-            with open("passwords.txt", mode="a") as passwords:
-                passwords.write(f"{website} | {email} | {password} \n")
+            try:
+                with open("data.json", mode="r") as data_file:
+                    data = json.load(data_file)
+            except FileNotFoundError:
+                with open("data.json", mode="w") as data_file:
+                    json.dump(new_data, data_file, indent=4)
+            else:
+                data.update(new_data)
+                with open("data.json", mode="w") as data_file:
+                    json.dump(data, data_file, indent=4)
+            finally:
                 entry_password.delete(0,END)
                 entry_website.delete(0,END)
 
