@@ -68,6 +68,35 @@ def save():
     elif len(password) == 0:
         messagebox.showinfo(title="Invalid entry", message="You left empty space \n in password input !")
 
+# ---------------------------- SEARCH --------------------------------- #
+def search():
+    print("search in saved passwords")
+    website = entry_website.get()
+    if len(website) >0:
+        try:
+            with open("data.json", mode="r") as data_file:
+                data = json.load(data_file)
+                print(data[website])
+
+                password = data[website]["password"]
+                email = data[website]["email"]
+                print("email: " + email)
+                print("password: " + password)
+
+                entry_password.delete(0, END)
+                entry_email.delete(0, END)
+
+                entry_email.insert(0, string=email)
+                entry_password.insert(0, string=password)
+
+        except FileNotFoundError:
+            print("no data was previously saved \n save some passwords first !")
+            messagebox.showinfo(title="no data found", message="no data was previously saved \n save some passwords first !")
+        except KeyError:
+            print(f"there is no password and email saved for this {website} website")
+            messagebox.showinfo(title = f"there is no data this {website} website",message=f"there is no password and email saved for this {website} website")
+
+
 
 # ---------------------------- UI SETUP ------------------------------- #
 
@@ -89,10 +118,10 @@ user_email_label.grid(column=0, row=2)
 password_label = Label(text="password", fg=BLACK, bg=YELLOW, font=(FONT_NAME, 12))
 password_label.grid(column=0, row=3)
 
-entry_website = Entry(width=53)
+entry_website = Entry(width=34)
 entry_website.focus()
 print(entry_website.get())
-entry_website.grid(column=1, row=1, columnspan=2)
+entry_website.grid(column=1, row=1, columnspan=1)
 
 entry_email = Entry(width=53)
 entry_email.insert(0, string="example@email.com")
@@ -108,12 +137,16 @@ entry_password.grid(column=1, row=3)
 
 # Buttons
 
-# calls action() when pressed
+# calls generate_password() when pressed
 generate_password_button = Button(text="Generete Password", command=generate_password, width=15)
 generate_password_button.grid(column=2, row=3)
 
-# calls action() when pressed
+# calls add() when pressed
 generate_password_button = Button(text="Add", command=save, width=45)
 generate_password_button.grid(column=1, row=4, columnspan=2)
+
+# calls search() when pressed
+search_button = Button(text="Search", command=search, width=14)
+search_button.grid(column=2, row=1)
 
 window.mainloop()
